@@ -22,6 +22,7 @@ export default {
         primary: {
           DEFAULT: "hsl(var(--primary))",
           foreground: "hsl(var(--primary-foreground))",
+          glow: "hsl(var(--primary-glow))",
         },
         secondary: {
           DEFAULT: "hsl(var(--secondary))",
@@ -39,24 +40,51 @@ export default {
           DEFAULT: "hsl(var(--accent))",
           foreground: "hsl(var(--accent-foreground))",
         },
-        popover: {
-          DEFAULT: "hsl(var(--popover))",
-          foreground: "hsl(var(--popover-foreground))",
-        },
         card: {
           DEFAULT: "hsl(var(--card))",
           foreground: "hsl(var(--card-foreground))",
+          glass: "hsl(var(--card-glass))",
         },
-        sidebar: {
-          DEFAULT: "hsl(var(--sidebar-background))",
-          foreground: "hsl(var(--sidebar-foreground))",
-          primary: "hsl(var(--sidebar-primary))",
-          "primary-foreground": "hsl(var(--sidebar-primary-foreground))",
-          accent: "hsl(var(--sidebar-accent))",
-          "accent-foreground": "hsl(var(--sidebar-accent-foreground))",
-          border: "hsl(var(--sidebar-border))",
-          ring: "hsl(var(--sidebar-ring))",
+        /* Jharkhand Nature Palette */
+        forest: {
+          primary: "hsl(var(--forest-primary))",
+          secondary: "hsl(var(--forest-secondary))",
+          accent: "hsl(var(--forest-accent))",
         },
+        water: {
+          primary: "hsl(var(--water-primary))",
+          secondary: "hsl(var(--water-secondary))",
+          accent: "hsl(var(--water-accent))",
+        },
+        earth: {
+          primary: "hsl(var(--earth-primary))",
+          secondary: "hsl(var(--earth-secondary))",
+          accent: "hsl(var(--earth-accent))",
+        },
+        sunset: {
+          primary: "hsl(var(--sunset-primary))",
+          secondary: "hsl(var(--sunset-secondary))",
+          accent: "hsl(var(--sunset-accent))",
+        },
+      },
+      fontFamily: {
+        'inter': ['Inter', 'sans-serif'],
+        'playfair': ['Playfair Display', 'serif'],
+      },
+      backgroundImage: {
+        'gradient-hero': 'var(--gradient-hero)',
+        'gradient-nature': 'var(--gradient-nature)',
+        'gradient-water': 'var(--gradient-water)',
+        'gradient-sunset': 'var(--gradient-sunset)',
+        'gradient-earth': 'var(--gradient-earth)',
+      },
+      boxShadow: {
+        'soft': 'var(--shadow-soft)',
+        'glow': 'var(--shadow-glow)',
+        'premium': 'var(--shadow-premium)',
+      },
+      backdropBlur: {
+        'glass': '20px',
       },
       borderRadius: {
         lg: "var(--radius)",
