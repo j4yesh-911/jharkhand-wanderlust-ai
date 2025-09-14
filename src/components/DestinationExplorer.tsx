@@ -1,24 +1,40 @@
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import { motion } from 'framer-motion';
-import { Search, Filter, Grid, List } from 'lucide-react';
+import { Search, Filter, Grid, List, Loader2 } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
+import { Alert, AlertDescription } from '@/components/ui/alert';
 import { DestinationCard } from './DestinationCard';
-import { destinations, categories } from '@/data/destinations';
+import { useDestinations } from '@/hooks/useDestinations';
+
+const categories = [
+  { id: 'all', name: 'All Destinations', icon: '🌍' },
+  { id: 'waterfall', name: 'Waterfalls', icon: '💧' },
+  { id: 'heritage', name: 'Heritage Sites', icon: '🏛️' },
+  { id: 'culture', name: 'Cultural Experiences', icon: '🎭' },
+  { id: 'adventure', name: 'Adventure Sports', icon: '⛰️' },
+  { id: 'nature', name: 'Nature & Wildlife', icon: '🌿' },
+  { id: 'museum', name: 'Museums', icon: '🏛️' },
+  { id: 'eco_park', name: 'Eco Parks', icon: '🌳' }
+];
 
 export const DestinationExplorer = () => {
   const [selectedCategory, setSelectedCategory] = useState('all');
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
   const [searchQuery, setSearchQuery] = useState('');
+  
+  const { destinations, loading, error, refetch } = useDestinations();
 
-  const filteredDestinations = destinations.filter(destination => {
-    const matchesCategory = selectedCategory === 'all' || destination.category === selectedCategory;
-    const matchesSearch = destination.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                         destination.location.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                         destination.description.toLowerCase().includes(searchQuery.toLowerCase());
-    return matchesCategory && matchesSearch;
-  });
+  const filteredDestinations = useMemo(() => {
+    return destinations.filter(destination => {
+      const matchesCategory = selectedCategory === 'all' || destination.category === selectedCategory;
+      const matchesSearch = destination.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                           destination.location.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                           destination.description.toLowerCase().includes(searchQuery.toLowerCase());
+      return matchesCategory && matchesSearch;
+    });
+  }, [destinations, selectedCategory, searchQuery]);
 
   return (
     <section className="py-20 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
@@ -127,24 +143,50 @@ export const DestinationExplorer = () => {
         </p>
       </motion.div>
 
+      {/* Error State */}
+      {error && (
+        <Alert variant="destructive" className="mb-8">
+          <AlertDescription>
+            Failed to load destinations: {error}
+            <Button onClick={refetch} variant="outline" size="sm" className="ml-2">
+              Try Again
+            </Button>
+          </AlertDescription>
+        </Alert>
+      )}
+
+      {/* Loading State */}
+      {loading && (
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          className="text-center py-16"
+        >
+          <Loader2 className="w-8 h-8 animate-spin mx-auto mb-4 text-primary" />
+          <p className="text-muted-foreground">Loading amazing destinations...</p>
+        </motion.div>
+      )}
+
       {/* Destinations Grid/List */}
-      <motion.div
-        initial={{ opacity: 0 }}
-        whileInView={{ opacity: 1 }}
-        viewport={{ once: true }}
-        className={viewMode === 'grid' 
-          ? 'grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8'
-          : 'space-y-6'
-        }
-      >
-        {filteredDestinations.map((destination, index) => (
-          <DestinationCard
-            key={destination.id}
-            destination={destination}
-            index={index}
-          />
-        ))}
-      </motion.div>
+      {!loading && !error && (
+        <motion.div
+          initial={{ opacity: 0 }}
+          whileInView={{ opacity: 1 }}
+          viewport={{ once: true }}
+          className={viewMode === 'grid' 
+            ? 'grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8'
+            : 'space-y-6'
+          }
+        >
+          {filteredDestinations.map((destination, index) => (
+            <DestinationCard
+              key={destination.id}
+              destination={destination}
+              index={index}
+            />
+          ))}
+        </motion.div>
+      )}
 
       {/* No Results */}
       {filteredDestinations.length === 0 && (
