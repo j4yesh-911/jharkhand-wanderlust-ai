@@ -14,7 +14,423 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      comments: {
+        Row: {
+          content: string
+          created_at: string
+          id: string
+          parent_id: string | null
+          updated_at: string
+          upload_id: string
+          user_id: string
+        }
+        Insert: {
+          content: string
+          created_at?: string
+          id?: string
+          parent_id?: string | null
+          updated_at?: string
+          upload_id: string
+          user_id: string
+        }
+        Update: {
+          content?: string
+          created_at?: string
+          id?: string
+          parent_id?: string | null
+          updated_at?: string
+          upload_id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "comments_parent_id_fkey"
+            columns: ["parent_id"]
+            isOneToOne: false
+            referencedRelation: "comments"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "comments_upload_id_fkey"
+            columns: ["upload_id"]
+            isOneToOne: false
+            referencedRelation: "community_uploads"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      community_uploads: {
+        Row: {
+          comment_count: number | null
+          coordinates: Json | null
+          created_at: string
+          description: string | null
+          destination_id: string | null
+          file_url: string
+          id: string
+          is_approved: boolean | null
+          is_featured: boolean | null
+          like_count: number | null
+          location: string | null
+          tags: string[] | null
+          thumbnail_url: string | null
+          title: string
+          updated_at: string
+          upload_type: Database["public"]["Enums"]["upload_type"]
+          user_id: string
+        }
+        Insert: {
+          comment_count?: number | null
+          coordinates?: Json | null
+          created_at?: string
+          description?: string | null
+          destination_id?: string | null
+          file_url: string
+          id?: string
+          is_approved?: boolean | null
+          is_featured?: boolean | null
+          like_count?: number | null
+          location?: string | null
+          tags?: string[] | null
+          thumbnail_url?: string | null
+          title: string
+          updated_at?: string
+          upload_type: Database["public"]["Enums"]["upload_type"]
+          user_id: string
+        }
+        Update: {
+          comment_count?: number | null
+          coordinates?: Json | null
+          created_at?: string
+          description?: string | null
+          destination_id?: string | null
+          file_url?: string
+          id?: string
+          is_approved?: boolean | null
+          is_featured?: boolean | null
+          like_count?: number | null
+          location?: string | null
+          tags?: string[] | null
+          thumbnail_url?: string | null
+          title?: string
+          updated_at?: string
+          upload_type?: Database["public"]["Enums"]["upload_type"]
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "community_uploads_destination_id_fkey"
+            columns: ["destination_id"]
+            isOneToOne: false
+            referencedRelation: "destinations"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      cultural_events: {
+        Row: {
+          contact_info: Json | null
+          created_at: string
+          description: string
+          end_date: string | null
+          event_type: Database["public"]["Enums"]["event_type"]
+          id: string
+          image_url: string | null
+          is_featured: boolean | null
+          location: string
+          organizer: string | null
+          start_date: string
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          contact_info?: Json | null
+          created_at?: string
+          description: string
+          end_date?: string | null
+          event_type: Database["public"]["Enums"]["event_type"]
+          id?: string
+          image_url?: string | null
+          is_featured?: boolean | null
+          location: string
+          organizer?: string | null
+          start_date: string
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          contact_info?: Json | null
+          created_at?: string
+          description?: string
+          end_date?: string | null
+          event_type?: Database["public"]["Enums"]["event_type"]
+          id?: string
+          image_url?: string | null
+          is_featured?: boolean | null
+          location?: string
+          organizer?: string | null
+          start_date?: string
+          title?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      destinations: {
+        Row: {
+          best_time_to_visit: string | null
+          category: Database["public"]["Enums"]["destination_category"]
+          coordinates: Json | null
+          created_at: string
+          description: string
+          entry_fee: string | null
+          features: string[] | null
+          how_to_reach: string | null
+          id: string
+          images: string[] | null
+          is_featured: boolean | null
+          location: string
+          name: string
+          nearby_attractions: string[] | null
+          rating: number | null
+          review_count: number | null
+          timings: string | null
+          updated_at: string
+        }
+        Insert: {
+          best_time_to_visit?: string | null
+          category: Database["public"]["Enums"]["destination_category"]
+          coordinates?: Json | null
+          created_at?: string
+          description: string
+          entry_fee?: string | null
+          features?: string[] | null
+          how_to_reach?: string | null
+          id?: string
+          images?: string[] | null
+          is_featured?: boolean | null
+          location: string
+          name: string
+          nearby_attractions?: string[] | null
+          rating?: number | null
+          review_count?: number | null
+          timings?: string | null
+          updated_at?: string
+        }
+        Update: {
+          best_time_to_visit?: string | null
+          category?: Database["public"]["Enums"]["destination_category"]
+          coordinates?: Json | null
+          created_at?: string
+          description?: string
+          entry_fee?: string | null
+          features?: string[] | null
+          how_to_reach?: string | null
+          id?: string
+          images?: string[] | null
+          is_featured?: boolean | null
+          location?: string
+          name?: string
+          nearby_attractions?: string[] | null
+          rating?: number | null
+          review_count?: number | null
+          timings?: string | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      itineraries: {
+        Row: {
+          budget_estimate: number | null
+          created_at: string
+          description: string | null
+          duration_days: number
+          id: string
+          is_public: boolean | null
+          title: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          budget_estimate?: number | null
+          created_at?: string
+          description?: string | null
+          duration_days: number
+          id?: string
+          is_public?: boolean | null
+          title: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          budget_estimate?: number | null
+          created_at?: string
+          description?: string | null
+          duration_days?: number
+          id?: string
+          is_public?: boolean | null
+          title?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      itinerary_destinations: {
+        Row: {
+          day_number: number
+          destination_id: string
+          id: string
+          itinerary_id: string
+          notes: string | null
+          visit_order: number
+        }
+        Insert: {
+          day_number: number
+          destination_id: string
+          id?: string
+          itinerary_id: string
+          notes?: string | null
+          visit_order: number
+        }
+        Update: {
+          day_number?: number
+          destination_id?: string
+          id?: string
+          itinerary_id?: string
+          notes?: string | null
+          visit_order?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "itinerary_destinations_destination_id_fkey"
+            columns: ["destination_id"]
+            isOneToOne: false
+            referencedRelation: "destinations"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "itinerary_destinations_itinerary_id_fkey"
+            columns: ["itinerary_id"]
+            isOneToOne: false
+            referencedRelation: "itineraries"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      likes: {
+        Row: {
+          created_at: string
+          id: string
+          upload_id: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          upload_id: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          upload_id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "likes_upload_id_fkey"
+            columns: ["upload_id"]
+            isOneToOne: false
+            referencedRelation: "community_uploads"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      profiles: {
+        Row: {
+          avatar_url: string | null
+          bio: string | null
+          created_at: string
+          full_name: string | null
+          id: string
+          location: string | null
+          preferences: Json | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          avatar_url?: string | null
+          bio?: string | null
+          created_at?: string
+          full_name?: string | null
+          id?: string
+          location?: string | null
+          preferences?: Json | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          avatar_url?: string | null
+          bio?: string | null
+          created_at?: string
+          full_name?: string | null
+          id?: string
+          location?: string | null
+          preferences?: Json | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      reviews: {
+        Row: {
+          content: string | null
+          created_at: string
+          destination_id: string
+          id: string
+          images: string[] | null
+          is_verified: boolean | null
+          rating: number
+          title: string | null
+          updated_at: string
+          user_id: string
+          visit_date: string | null
+        }
+        Insert: {
+          content?: string | null
+          created_at?: string
+          destination_id: string
+          id?: string
+          images?: string[] | null
+          is_verified?: boolean | null
+          rating: number
+          title?: string | null
+          updated_at?: string
+          user_id: string
+          visit_date?: string | null
+        }
+        Update: {
+          content?: string | null
+          created_at?: string
+          destination_id?: string
+          id?: string
+          images?: string[] | null
+          is_verified?: boolean | null
+          rating?: number
+          title?: string | null
+          updated_at?: string
+          user_id?: string
+          visit_date?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "reviews_destination_id_fkey"
+            columns: ["destination_id"]
+            isOneToOne: false
+            referencedRelation: "destinations"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Views: {
       [_ in never]: never
@@ -23,7 +439,21 @@ export type Database = {
       [_ in never]: never
     }
     Enums: {
-      [_ in never]: never
+      destination_category:
+        | "waterfall"
+        | "heritage"
+        | "adventure"
+        | "culture"
+        | "nature"
+        | "museum"
+        | "eco_park"
+      event_type:
+        | "festival"
+        | "workshop"
+        | "exhibition"
+        | "performance"
+        | "fair"
+      upload_type: "photo" | "video"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -150,6 +580,18 @@ export type CompositeTypes<
 
 export const Constants = {
   public: {
-    Enums: {},
+    Enums: {
+      destination_category: [
+        "waterfall",
+        "heritage",
+        "adventure",
+        "culture",
+        "nature",
+        "museum",
+        "eco_park",
+      ],
+      event_type: ["festival", "workshop", "exhibition", "performance", "fair"],
+      upload_type: ["photo", "video"],
+    },
   },
 } as const
