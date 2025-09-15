@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
+import type { Json } from '@/integrations/supabase/types';
 
 export interface Destination {
   id: string;
@@ -7,7 +8,7 @@ export interface Destination {
   description: string;
   category: 'waterfall' | 'heritage' | 'adventure' | 'culture' | 'nature' | 'museum' | 'eco_park';
   location: string;
-  coordinates?: { lat: number; lng: number };
+  coordinates?: Json;
   images: string[];
   rating: number;
   review_count: number;
@@ -29,7 +30,7 @@ export interface UseDestinationsResult {
   refetch: () => void;
 }
 
-export const useDestinations = (category?: string): UseDestinationsResult => {
+export const useDestinations = (): UseDestinationsResult => {
   const [destinations, setDestinations] = useState<Destination[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -45,9 +46,6 @@ export const useDestinations = (category?: string): UseDestinationsResult => {
         .order('is_featured', { ascending: false })
         .order('rating', { ascending: false });
 
-      if (category && category !== 'all') {
-        query = query.eq('category', category);
-      }
 
       const { data, error: fetchError } = await query;
 
@@ -66,7 +64,7 @@ export const useDestinations = (category?: string): UseDestinationsResult => {
 
   useEffect(() => {
     fetchDestinations();
-  }, [category]);
+  }, []);
 
   return {
     destinations,

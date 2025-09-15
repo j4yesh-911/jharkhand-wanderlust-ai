@@ -7,6 +7,7 @@ import { Badge } from '@/components/ui/badge';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { DestinationCard } from './DestinationCard';
 import { useDestinations } from '@/hooks/useDestinations';
+import { Destination as UIDestination } from '@/data/destinations';
 
 const categories = [
   { id: 'all', name: 'All Destinations', icon: '🌍' },
@@ -35,6 +36,30 @@ export const DestinationExplorer = () => {
       return matchesCategory && matchesSearch;
     });
   }, [destinations, selectedCategory, searchQuery]);
+
+  const uiDestinations = useMemo<UIDestination[]>(() => {
+    const allowedCategories = ['waterfall','heritage','culture','adventure','nature'] as const;
+    return filteredDestinations.map((d) => {
+      const category = (allowedCategories as readonly string[]).includes(d.category as any)
+        ? (d.category as typeof allowedCategories[number])
+        : 'nature';
+      return {
+        id: d.id,
+        name: d.name,
+        category,
+        description: d.description,
+        image: '/src/assets/waterfall-destination.jpg',
+        location: d.location,
+        rating: Number(d.rating ?? 0),
+        reviews: d.review_count ?? 0,
+        highlights: Array.isArray(d.features) ? d.features : [],
+        bestTime: d.best_time_to_visit || 'Year Round',
+        duration: d.timings || 'Flexible',
+        difficulty: 'Easy',
+        price: { min: 0, max: 0 },
+      };
+    });
+  }, [filteredDestinations]);
 
   return (
     <section className="py-20 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
@@ -178,7 +203,7 @@ export const DestinationExplorer = () => {
             : 'space-y-6'
           }
         >
-          {filteredDestinations.map((destination, index) => (
+          {uiDestinations.map((destination, index) => (
             <DestinationCard
               key={destination.id}
               destination={destination}
