@@ -1,10 +1,123 @@
-import { Navigation } from '@/components/Navigation';
+import { useState } from 'react';
 import { motion } from 'framer-motion';
-import { Calendar, Plus, MapPin, Clock } from 'lucide-react';
+import { Navigation } from '@/components/Navigation';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Card } from '@/components/ui/card';
+import { Input } from '@/components/ui/input';
+import { Textarea } from '@/components/ui/textarea';
+import { Badge } from '@/components/ui/badge';
+import { useToast } from '@/components/ui/use-toast';
+import { useItinerary } from '@/hooks/useItinerary';
+import { useDestinations } from '@/hooks/useDestinations';
+import { useAuth } from '@/hooks/useAuth';
+import { 
+  Calendar, 
+  MapPin, 
+  Clock, 
+  Users, 
+  Plus, 
+  Sparkles,
+  Loader2,
+  Route,
+  DollarSign
+} from 'lucide-react';
 
 const Itinerary = () => {
+  const { user } = useAuth();
+  const { toast } = useToast();
+  const { itineraries, loading, createItinerary, generateAIItinerary } = useItinerary();
+  const { destinations } = useDestinations();
+  
+  const [showCreateForm, setShowCreateForm] = useState(false);
+  const [showAIForm, setShowAIForm] = useState(false);
+  const [aiLoading, setAiLoading] = useState(false);
+  const [aiSuggestions, setAiSuggestions] = useState<any>(null);
+  
+  const [newItinerary, setNewItinerary] = useState({
+    title: '',
+    description: '',
+    duration_days: 3,
+    budget_estimate: 10000,
+    is_public: false,
+  });
+
+  const [aiPreferences, setAiPreferences] = useState({
+    duration: 3,
+    interests: [] as string[],
+    budget: 'moderate',
+    groupSize: 2,
+  });
+
+  const handleCreateItinerary = async (e: React.FormEvent) => {
+    e.preventDefault();
+    
+    if (!user) {
+      toast({
+        title: "Authentication Required",
+        description: "Please login to create itineraries",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    const result = await createItinerary(newItinerary);
+    if (result) {
+      toast({
+        title: "Itinerary Created",
+        description: "Your itinerary has been created successfully",
+      });
+      setShowCreateForm(false);
+      setNewItinerary({
+        title: '',
+        description: '',
+        duration_days: 3,
+        budget_estimate: 10000,
+        is_public: false,
+      });
+    }
+  };
+
+  const handleGenerateAI = async () => {
+    setAiLoading(true);
+    try {
+      const suggestions = await generateAIItinerary(aiPreferences);
+      setAiSuggestions(suggestions);
+      
+      toast({
+        title: "AI Itinerary Generated",
+        description: "Your personalized itinerary is ready!",
+      });
+    } catch (error) {
+      toast({
+        title: "Generation Failed",
+        description: "Please try again or create a manual itinerary",
+        variant: "destructive",
+      });
+    } finally {
+      setAiLoading(false);
+    }
+  };
+
+  const toggleInterest = (interest: string) => {
+    setAiPreferences(prev => ({
+      ...prev,
+      interests: prev.interests.includes(interest)
+        ? prev.interests.filter(i => i !== interest)
+        : [...prev.interests, interest]
+    }));
+  };
+
+  const interests = [
+    'Waterfalls', 'Culture', 'Adventure', 'Nature', 'Heritage', 'Food', 'Photography'
+  ];
+
+  const formatDate = (dateString: string) => {
+    return new Date(dateString).toLocaleDateString('en-US', {
+      year: 'numeric',
+      month: 'short',
+      day: 'numeric',
+    });
+  };
   return (
     <div className="min-h-screen">
       <Navigation />

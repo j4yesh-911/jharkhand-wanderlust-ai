@@ -238,6 +238,60 @@ export type Database = {
         }
         Relationships: []
       }
+      food: {
+        Row: {
+          category: string
+          created_at: string
+          description: string
+          dietary_tags: string[] | null
+          id: string
+          image_url: string | null
+          ingredients: string[] | null
+          is_featured: boolean | null
+          name: string
+          preparation_method: string | null
+          price_range: string | null
+          region: string | null
+          restaurant_locations: string[] | null
+          spice_level: string | null
+          updated_at: string
+        }
+        Insert: {
+          category?: string
+          created_at?: string
+          description: string
+          dietary_tags?: string[] | null
+          id?: string
+          image_url?: string | null
+          ingredients?: string[] | null
+          is_featured?: boolean | null
+          name: string
+          preparation_method?: string | null
+          price_range?: string | null
+          region?: string | null
+          restaurant_locations?: string[] | null
+          spice_level?: string | null
+          updated_at?: string
+        }
+        Update: {
+          category?: string
+          created_at?: string
+          description?: string
+          dietary_tags?: string[] | null
+          id?: string
+          image_url?: string | null
+          ingredients?: string[] | null
+          is_featured?: boolean | null
+          name?: string
+          preparation_method?: string | null
+          price_range?: string | null
+          region?: string | null
+          restaurant_locations?: string[] | null
+          spice_level?: string | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
       itineraries: {
         Row: {
           budget_estimate: number | null
