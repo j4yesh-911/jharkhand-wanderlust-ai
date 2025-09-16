@@ -61,6 +61,7 @@ export type Database = {
       }
       community_uploads: {
         Row: {
+          category: string | null
           comment_count: number | null
           coordinates: Json | null
           created_at: string
@@ -80,6 +81,7 @@ export type Database = {
           user_id: string
         }
         Insert: {
+          category?: string | null
           comment_count?: number | null
           coordinates?: Json | null
           created_at?: string
@@ -99,6 +101,7 @@ export type Database = {
           user_id: string
         }
         Update: {
+          category?: string | null
           comment_count?: number | null
           coordinates?: Json | null
           created_at?: string
