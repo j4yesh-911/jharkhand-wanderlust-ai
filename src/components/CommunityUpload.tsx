@@ -9,6 +9,7 @@ import { useToast } from '@/components/ui/use-toast';
 import { useCommunityUploads } from '@/hooks/useCommunityUploads';
 import { useAuth } from '@/hooks/useAuth';
 import { Upload, Image, Video, FileText, Heart, MessageCircle, MapPin, Calendar } from 'lucide-react';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 
 export const CommunityUpload = () => {
   const { user } = useAuth();
@@ -21,6 +22,7 @@ export const CommunityUpload = () => {
     location: '',
     tags: '',
     upload_type: 'photo' as 'photo' | 'video',
+    category: '',
   });
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
 
@@ -58,6 +60,15 @@ export const CommunityUpload = () => {
       return;
     }
 
+    if (!uploadData.category) {
+      toast({
+        title: "Category Required",
+        description: "Please select a category for your upload",
+        variant: "destructive",
+      });
+      return;
+    }
+
     const result = await uploadFile(selectedFile, {
       ...uploadData,
       tags: uploadData.tags.split(',').map(tag => tag.trim()).filter(Boolean),
@@ -75,6 +86,7 @@ export const CommunityUpload = () => {
         location: '',
         tags: '',
         upload_type: 'photo',
+        category: '',
       });
       setSelectedFile(null);
     }
@@ -163,6 +175,9 @@ export const CommunityUpload = () => {
                       onChange={handleFileChange}
                       required
                     />
+                    <p className="text-xs text-muted-foreground mt-1">
+                      Upload images or videos (max 20MB)
+                    </p>
                   </div>
                   
                   <Input
@@ -171,6 +186,24 @@ export const CommunityUpload = () => {
                     onChange={(e) => setUploadData(prev => ({ ...prev, title: e.target.value }))}
                     required
                   />
+
+                  <div>
+                    <Select value={uploadData.category} onValueChange={(value) => setUploadData(prev => ({ ...prev, category: value }))}>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Select category" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="waterfalls">Waterfalls</SelectItem>
+                        <SelectItem value="heritage">Heritage Sites</SelectItem>
+                        <SelectItem value="food">Food & Cuisine</SelectItem>
+                        <SelectItem value="culture">Cultural Experience</SelectItem>
+                        <SelectItem value="adventure">Adventure Sports</SelectItem>
+                        <SelectItem value="nature">Nature & Wildlife</SelectItem>
+                        <SelectItem value="festivals">Festivals & Events</SelectItem>
+                        <SelectItem value="accommodation">Accommodation</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
                   
                   <Textarea
                     placeholder="Describe your experience..."
@@ -259,15 +292,19 @@ export const CommunityUpload = () => {
                   </div>
                 </div>
 
-                {upload.tags.length > 0 && (
-                  <div className="flex flex-wrap gap-1 mb-4">
-                    {upload.tags.slice(0, 3).map((tag) => (
-                      <Badge key={tag} variant="secondary" className="text-xs">
-                        #{tag}
-                      </Badge>
-                    ))}
-                  </div>
-                )}
+                 {upload.tags.length > 0 && (
+                   <div className="flex flex-wrap gap-1 mb-4">
+                     {upload.tags.slice(0, 3).map((tag) => (
+                       <Badge key={tag} variant="secondary" className="text-xs">
+                         #{tag}
+                       </Badge>
+                     ))}
+                   </div>
+                 )}
+
+                 <div className="flex items-center justify-between text-sm text-muted-foreground mb-4">
+                   <span className="capitalize font-medium">Category: {upload.category || 'General'}</span>
+                 </div>
 
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-4 text-sm text-muted-foreground">

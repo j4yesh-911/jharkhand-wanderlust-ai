@@ -18,6 +18,7 @@ export interface CommunityUpload {
   is_approved: boolean;
   user_id: string;
   destination_id?: string;
+  category?: string;
   created_at: string;
   updated_at: string;
 }
@@ -56,14 +57,15 @@ export const useCommunityUploads = () => {
 
   const uploadFile = async (
     file: File,
-    uploadData: {
-      title: string;
-      description?: string;
-      upload_type: 'photo' | 'video';
-      location?: string;
-      tags: string[];
-      destination_id?: string;
-    }
+  uploadData: {
+    title: string;
+    description?: string;
+    upload_type: 'photo' | 'video';
+    location?: string;
+    tags: string[];
+    destination_id?: string;
+    category?: string;
+  }
   ) => {
     if (!user) {
       setError('User must be logged in to upload');
