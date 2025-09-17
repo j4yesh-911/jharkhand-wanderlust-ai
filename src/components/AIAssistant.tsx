@@ -1,14 +1,12 @@
 import { useState, useRef, useEffect } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion } from 'framer-motion';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { useToast } from '@/components/ui/use-toast';
-import { supabase } from '@/integrations/supabase/client';
 import { 
-  MessageCircle, 
   Send, 
   Bot, 
   User, 
@@ -19,6 +17,11 @@ import {
   Camera,
   Route
 } from 'lucide-react';
+
+import { GoogleGenerativeAI } from "@google/generative-ai";
+
+const genAI = new GoogleGenerativeAI(import.meta.env.VITE_GEMINI_API_KEY);
+const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
 
 interface Message {
   id: string;
@@ -59,56 +62,49 @@ export const AIAssistant = () => {
   }, [messages]);
 
   const sendMessage = async (content: string) => {
-    if (!content.trim()) return;
+  if (!content.trim()) return;
 
-    const userMessage: Message = {
-      id: Date.now().toString(),
-      content,
-      sender: 'user',
+  const userMessage: Message = {
+    id: Date.now().toString(),
+    content,
+    sender: 'user',
+    timestamp: new Date(),
+  };
+
+  setMessages(prev => [...prev, userMessage]);
+  setInputValue('');
+  setIsLoading(true);
+
+  try {
+    // ✅ Call Gemini instead of Supabase
+    const result = await model.generateContent(content);
+    const response = result.response.text();
+
+    const aiMessage: Message = {
+      id: (Date.now() + 1).toString(),
+      content: response,
+      sender: 'ai',
       timestamp: new Date(),
     };
 
-    setMessages(prev => [...prev, userMessage]);
-    setInputValue('');
-    setIsLoading(true);
+    setMessages(prev => [...prev, aiMessage]);
+  } catch (error) {
+    console.error('Gemini API error:', error);
 
-    try {
-      // Call our AI edge function
-      const { data, error } = await supabase.functions.invoke('ai-chat', {
-        body: {
-          message: content,
-          type: 'chat'
-        }
-      });
+    // fallback response
+    const fallbackMessage: Message = {
+      id: (Date.now() + 1).toString(),
+      content: getDefaultResponse(content),
+      sender: 'ai',
+      timestamp: new Date(),
+    };
 
-      if (error) {
-        throw error;
-      }
+    setMessages(prev => [...prev, fallbackMessage]);
+  } finally {
+    setIsLoading(false);
+  }
+};
 
-      const aiMessage: Message = {
-        id: (Date.now() + 1).toString(),
-        content: data?.response || getDefaultResponse(content),
-        sender: 'ai',
-        timestamp: new Date(),
-      };
-
-      setMessages(prev => [...prev, aiMessage]);
-    } catch (error) {
-      console.error('AI chat error:', error);
-      
-      // Fallback response when AI is not available
-      const fallbackMessage: Message = {
-        id: (Date.now() + 1).toString(),
-        content: getDefaultResponse(content),
-        sender: 'ai',
-        timestamp: new Date(),
-      };
-
-      setMessages(prev => [...prev, fallbackMessage]);
-    } finally {
-      setIsLoading(false);
-    }
-  };
 
   const getDefaultResponse = (userMessage: string): string => {
     const lowercaseMessage = userMessage.toLowerCase();

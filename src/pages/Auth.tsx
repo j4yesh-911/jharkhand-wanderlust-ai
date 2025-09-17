@@ -74,26 +74,43 @@ export const Auth = () => {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center p-4 bg-gradient-to-br from-primary/5 via-background to-accent/5">
-      <div className="absolute inset-0 bg-gradient-cosmic opacity-10" />
-      
+    <div className="min-h-screen flex items-center justify-center p-6 bg-gradient-to-br from-purple-900 via-gray-900 to-black relative overflow-hidden">
+      {/* floating gradient orbs */}
       <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
+        className="absolute w-72 h-72 rounded-full bg-purple-500/30 blur-3xl top-10 left-10"
+        animate={{ x: [0, 30, -30, 0], y: [0, -20, 20, 0] }}
+        transition={{ duration: 12, repeat: Infinity, ease: "easeInOut" }}
+      />
+      <motion.div
+        className="absolute w-96 h-96 rounded-full bg-blue-500/20 blur-3xl bottom-10 right-10"
+        animate={{ x: [0, -40, 40, 0], y: [0, 20, -20, 0] }}
+        transition={{ duration: 15, repeat: Infinity, ease: "easeInOut" }}
+      />
+
+      {/* Auth card with 3D tilt */}
+      <motion.div
+        initial={{ opacity: 0, scale: 0.95 }}
+        animate={{ opacity: 1, scale: 1 }}
+        transition={{ duration: 0.5 }}
+        whileHover={{ rotateX: 5, rotateY: -5, scale: 1.02 }}
         className="w-full max-w-md relative z-10"
       >
-
-        <Card className="glass-card border-border/50">
+        <Card className="glass-card border border-purple-500/30 shadow-2xl shadow-purple-800/40 backdrop-blur-xl">
           <CardHeader className="text-center">
-            <CardTitle className="text-2xl font-playfair bg-gradient-nature bg-clip-text text-transparent">
-              {isLogin ? 'Welcome Back' : 'Join Jharkhand Tourism'}
-            </CardTitle>
-            <CardDescription>
-              {isLogin 
-                ? 'Sign in to your account to continue exploring' 
-                : 'Create an account to start your journey'
-              }
-            </CardDescription>
+            <motion.div
+              initial={{ opacity: 0, y: -20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6 }}
+            >
+              <CardTitle className="text-3xl font-extrabold bg-gradient-to-r from-purple-400 via-pink-400 to-yellow-400 bg-clip-text text-transparent">
+                {isLogin ? 'Welcome Back' : 'Join Jharkhand Tourism'}
+              </CardTitle>
+              <CardDescription className="mt-2 text-gray-400">
+                {isLogin 
+                  ? 'Sign in to your account to continue exploring' 
+                  : 'Create an account to start your journey'}
+              </CardDescription>
+            </motion.div>
           </CardHeader>
 
           <form onSubmit={handleSubmit}>
@@ -105,7 +122,12 @@ export const Auth = () => {
               )}
 
               {!isLogin && (
-                <div className="space-y-2">
+                <motion.div
+                  initial={{ opacity: 0, x: -20 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ duration: 0.4 }}
+                  className="space-y-2"
+                >
                   <Label htmlFor="fullName">Full Name</Label>
                   <div className="relative">
                     <User className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
@@ -119,7 +141,7 @@ export const Auth = () => {
                       required={!isLogin}
                     />
                   </div>
-                </div>
+                </motion.div>
               )}
 
               <div className="space-y-2">
@@ -169,22 +191,24 @@ export const Auth = () => {
             </CardContent>
 
             <CardFooter className="flex flex-col space-y-4">
-              <Button
-                type="submit"
-                className="w-full bg-gradient-nature hover:opacity-90 text-white"
-                disabled={loading}
-              >
-                {loading ? 'Please wait...' : (isLogin ? 'Sign In' : 'Sign Up')}
-              </Button>
+              <motion.div whileTap={{ scale: 0.95 }}>
+                <Button
+                  type="submit"
+                  className="w-full bg-gradient-to-r from-purple-600 via-pink-500 to-orange-400 hover:opacity-90 text-white shadow-lg shadow-purple-800/40"
+                  disabled={loading}
+                >
+                  {loading ? 'Please wait...' : (isLogin ? 'Sign In' : 'Sign Up')}
+                </Button>
+              </motion.div>
 
               <div className="text-center text-sm">
-                <span className="text-muted-foreground">
+                <span className="text-gray-400">
                   {isLogin ? "Don't have an account? " : "Already have an account? "}
                 </span>
                 <Button
                   type="button"
                   variant="link"
-                  className="p-0 h-auto font-semibold text-primary"
+                  className="p-0 h-auto font-semibold text-purple-400 hover:text-purple-300"
                   onClick={() => {
                     setIsLogin(!isLogin);
                     setError('');
