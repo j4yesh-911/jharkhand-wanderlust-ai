@@ -183,13 +183,29 @@ export const CommunityUpload = () => {
             </CardHeader>
             <CardContent>
               {!showUploadForm ? (
-                <Button 
-                  onClick={() => setShowUploadForm(true)}
-                  className="w-full"
-                >
-                  <Upload className="w-4 h-4 mr-2" />
-                  Upload Photo or Video
-                </Button>
+                <div className="flex gap-2">
+                  <Button 
+                    onClick={() => {
+                      setShowUploadForm(true);
+                      setUploadData(prev => ({ ...prev, upload_type: 'photo' }));
+                    }}
+                    className="flex-1"
+                    variant="outline"
+                  >
+                    <Image className="w-4 h-4 mr-2" />
+                    Upload Photo
+                  </Button>
+                  <Button 
+                    onClick={() => {
+                      setShowUploadForm(true);
+                      setUploadData(prev => ({ ...prev, upload_type: 'video' }));
+                    }}
+                    className="flex-1"
+                  >
+                    <Video className="w-4 h-4 mr-2" />
+                    Upload Video
+                  </Button>
+                </div>
               ) : (
                 <form onSubmit={handleSubmit} className="space-y-4">
                   <div>
