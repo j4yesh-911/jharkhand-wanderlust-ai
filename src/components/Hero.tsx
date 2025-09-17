@@ -18,7 +18,7 @@ export const Hero = () => {
       </div>
 
       {/* Floating Elements */}
-      <div className="absolute top-20 left-10 animate-float">
+      {/* <div className="absolute top-20 left-10 animate-float">
         <motion.div
           initial={{ opacity: 0, scale: 0 }}
           animate={{ opacity: 1, scale: 1 }}
@@ -31,9 +31,9 @@ export const Hero = () => {
             <div className="text-white/70">1000+ Reviews</div>
           </div>
         </motion.div>
-      </div>
+      </div> */}
 
-      <div className="absolute top-32 right-10 animate-float delay-200">
+      {/* <div className="absolute top-32 right-10 animate-float delay-200">
         <motion.div
           initial={{ opacity: 0, scale: 0 }}
           animate={{ opacity: 1, scale: 1 }}
@@ -46,7 +46,7 @@ export const Hero = () => {
             <div className="text-white/70">This Month</div>
           </div>
         </motion.div>
-      </div>
+      </div> */}
 
       {/* Main Content */}
       <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">

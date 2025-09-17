@@ -3,6 +3,8 @@ import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { AuthProvider } from "@/hooks/useAuth";
+import { ProtectedRoute } from "@/components/ProtectedRoute";
 import Home from "./pages/Home";
 import Explore from "./pages/Explore";
 import Itinerary from "./pages/Itinerary";
@@ -17,24 +19,58 @@ const queryClient = new QueryClient();
 
 const App = () => (
   <QueryClientProvider client={queryClient}>
-    <TooltipProvider>
-      <Toaster />
-      <Sonner />
-      <BrowserRouter>
-        <Routes>
-          <Route path="/" element={<Home />} />
-          <Route path="/explore" element={<Explore />} />
-          <Route path="/itinerary" element={<Itinerary />} />
-          <Route path="/food" element={<Food />} />
-          <Route path="/culture" element={<Culture />} />
-          <Route path="/community" element={<Community />} />
-          <Route path="/assistant" element={<Assistant />} />
-          <Route path="/auth" element={<Auth />} />
-          {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
-          <Route path="*" element={<NotFound />} />
-        </Routes>
-      </BrowserRouter>
-    </TooltipProvider>
+    <AuthProvider>
+      <TooltipProvider>
+        <Toaster />
+        <Sonner />
+        <BrowserRouter>
+          <Routes>
+            <Route path="/auth" element={<Auth />} />
+            <Route path="/" element={
+              <ProtectedRoute>
+                <Home />
+              </ProtectedRoute>
+            } />
+            <Route path="/explore" element={
+              <ProtectedRoute>
+                <Explore />
+              </ProtectedRoute>
+            } />
+            <Route path="/itinerary" element={
+              <ProtectedRoute>
+                <Itinerary />
+              </ProtectedRoute>
+            } />
+            <Route path="/food" element={
+              <ProtectedRoute>
+                <Food />
+              </ProtectedRoute>
+            } />
+            <Route path="/culture" element={
+              <ProtectedRoute>
+                <Culture />
+              </ProtectedRoute>
+            } />
+            <Route path="/community" element={
+              <ProtectedRoute>
+                <Community />
+              </ProtectedRoute>
+            } />
+            <Route path="/assistant" element={
+              <ProtectedRoute>
+                <Assistant />
+              </ProtectedRoute>
+            } />
+            {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
+            <Route path="*" element={
+              <ProtectedRoute>
+                <NotFound />
+              </ProtectedRoute>
+            } />
+          </Routes>
+        </BrowserRouter>
+      </TooltipProvider>
+    </AuthProvider>
   </QueryClientProvider>
 );
 

@@ -10,6 +10,7 @@ import { useCommunityUploads } from '@/hooks/useCommunityUploads';
 import { useAuth } from '@/hooks/useAuth';
 import { Upload, Image, Video, FileText, Heart, MessageCircle, MapPin, Calendar } from 'lucide-react';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Link } from 'react-router-dom';
 
 export const CommunityUpload = () => {
   const { user } = useAuth();
@@ -25,11 +26,27 @@ export const CommunityUpload = () => {
     category: '',
   });
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
+  const [previewUrl, setPreviewUrl] = useState<string | null>(null);
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
+      // Check file size (20MB limit)
+      if (file.size > 20 * 1024 * 1024) {
+        toast({
+          title: "File Too Large",
+          description: "Please select a file smaller than 20MB",
+          variant: "destructive",
+        });
+        return;
+      }
+
       setSelectedFile(file);
+      
+      // Create preview URL
+      const url = URL.createObjectURL(file);
+      setPreviewUrl(url);
+      
       // Auto-detect upload type based on file
       if (file.type.startsWith('image/')) {
         setUploadData(prev => ({ ...prev, upload_type: 'photo' }));
@@ -37,6 +54,14 @@ export const CommunityUpload = () => {
         setUploadData(prev => ({ ...prev, upload_type: 'video' }));
       }
     }
+  };
+
+  const clearPreview = () => {
+    if (previewUrl) {
+      URL.revokeObjectURL(previewUrl);
+      setPreviewUrl(null);
+    }
+    setSelectedFile(null);
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -88,7 +113,7 @@ export const CommunityUpload = () => {
         upload_type: 'photo',
         category: '',
       });
-      setSelectedFile(null);
+      clearPreview();
     }
   };
 
@@ -159,25 +184,76 @@ export const CommunityUpload = () => {
             </CardHeader>
             <CardContent>
               {!showUploadForm ? (
-                <Button 
-                  onClick={() => setShowUploadForm(true)}
-                  className="w-full"
-                >
-                  <Upload className="w-4 h-4 mr-2" />
-                  Upload Photo or Video
-                </Button>
+                <div className="flex gap-2">
+                  <Button 
+                    onClick={() => {
+                      setShowUploadForm(true);
+                      setUploadData(prev => ({ ...prev, upload_type: 'photo' }));
+                    }}
+                    className="flex-1"
+                    variant="outline"
+                  >
+                    <Image className="w-4 h-4 mr-2" />
+                    Upload Photo
+                  </Button>
+                  <Button 
+                    onClick={() => {
+                      setShowUploadForm(true);
+                      setUploadData(prev => ({ ...prev, upload_type: 'video' }));
+                    }}
+                    className="flex-1"
+                  >
+                    <Video className="w-4 h-4 mr-2" />
+                    Upload Video
+                  </Button>
+                </div>
               ) : (
                 <form onSubmit={handleSubmit} className="space-y-4">
                   <div>
                     <Input
                       type="file"
-                      accept="image/*,video/*"
+                      accept="image/*,video/mp4,video/webm,video/ogg,video/quicktime"
                       onChange={handleFileChange}
                       required
                     />
                     <p className="text-xs text-muted-foreground mt-1">
-                      Upload images or videos (max 20MB)
+                      Upload images or short videos (MP4, WebM, MOV - max 20MB)
                     </p>
+                    
+                    {previewUrl && selectedFile && (
+                      <div className="mt-4 relative">
+                        <div className="flex items-center justify-between mb-2">
+                          <span className="text-sm font-medium">Preview:</span>
+                          <Button 
+                            type="button" 
+                            variant="ghost" 
+                            size="sm"
+                            onClick={clearPreview}
+                          >
+                            Clear
+                          </Button>
+                        </div>
+                        {selectedFile.type.startsWith('image/') ? (
+                          <img 
+                            src={previewUrl} 
+                            alt="Preview" 
+                            className="w-full h-48 object-cover rounded-md border"
+                          />
+                        ) : (
+                          <video 
+                            src={previewUrl} 
+                            controls 
+                            className="w-full h-48 rounded-md border"
+                            preload="metadata"
+                          >
+                            Your browser does not support video playback.
+                          </video>
+                        )}
+                        <p className="text-xs text-muted-foreground mt-1">
+                          File: {selectedFile.name} ({(selectedFile.size / (1024 * 1024)).toFixed(2)} MB)
+                        </p>
+                      </div>
+                    )}
                   </div>
                   
                   <Input
@@ -230,13 +306,45 @@ export const CommunityUpload = () => {
                     <Button 
                       type="button" 
                       variant="outline"
-                      onClick={() => setShowUploadForm(false)}
+                      onClick={() => {
+                        setShowUploadForm(false);
+                        clearPreview();
+                      }}
                     >
                       Cancel
                     </Button>
                   </div>
                 </form>
               )}
+            </CardContent>
+          </Card>
+        </motion.div>
+      )}
+      
+      {!user && (
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="mb-8"
+        >
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <Upload className="w-5 h-5" />
+                Share Your Experience
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="flex flex-col sm:flex-row items-center justify-between gap-3">
+                <p className="text-sm text-muted-foreground">
+                  Sign in to upload photos and short videos to the community.
+                </p>
+                <Link to="/auth">
+                  <Button>
+                    Sign in to Upload
+                  </Button>
+                </Link>
+              </div>
             </CardContent>
           </Card>
         </motion.div>
@@ -251,17 +359,57 @@ export const CommunityUpload = () => {
             transition={{ delay: index * 0.1 }}
           >
             <Card className="overflow-hidden hover:shadow-lg transition-shadow">
-              <div className="aspect-video bg-gradient-to-br from-primary/20 to-accent/20 relative">
-                {upload.upload_type === 'photo' && (
-                  <div className="absolute inset-0 flex items-center justify-center">
-                    <Image className="w-16 h-16 text-primary/30" />
+              <div className="aspect-video relative bg-muted">
+                {upload.file_url && upload.upload_type === 'photo' && (
+                  <img 
+                    src={upload.file_url} 
+                    alt={upload.title}
+                    className="w-full h-full object-cover"
+                    loading="lazy"
+                  />
+                )}
+                {upload.file_url && upload.upload_type === 'video' && (
+                  <video 
+                    src={upload.file_url}
+                    className="w-full h-full object-cover"
+                    controls={false}
+                    preload="metadata"
+                    poster={upload.thumbnail_url}
+                  >
+                    <source src={upload.file_url} />
+                    Your browser does not support video playback.
+                  </video>
+                )}
+                {!upload.file_url && (
+                  <div className="absolute inset-0 flex items-center justify-center bg-gradient-to-br from-primary/20 to-accent/20">
+                    {upload.upload_type === 'photo' ? (
+                      <Image className="w-16 h-16 text-primary/30" />
+                    ) : (
+                      <Video className="w-16 h-16 text-primary/30" />
+                    )}
                   </div>
                 )}
-                {upload.upload_type === 'video' && (
-                  <div className="absolute inset-0 flex items-center justify-center">
-                    <Video className="w-16 h-16 text-primary/30" />
+                
+                {/* Video overlay indicator */}
+                {upload.upload_type === 'video' && upload.file_url && (
+                  <div className="absolute inset-0 flex items-center justify-center bg-black/20 opacity-0 hover:opacity-100 transition-opacity cursor-pointer"
+                       onClick={(e) => {
+                         const video = e.currentTarget.parentElement?.querySelector('video');
+                         if (video) {
+                           if (video.paused) {
+                             video.play();
+                             video.setAttribute('controls', 'true');
+                           } else {
+                             video.pause();
+                           }
+                         }
+                       }}>
+                    <div className="bg-white/90 rounded-full p-3">
+                      <Video className="w-8 h-8 text-primary" />
+                    </div>
                   </div>
                 )}
+                
                 {upload.is_featured && (
                   <Badge className="absolute top-2 right-2" variant="default">
                     Featured
