@@ -1,12 +1,32 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { Menu, X, MapPin, Calendar, Users, Camera, MessageCircle, Sun, Moon } from 'lucide-react';
+import { Menu, X, MapPin, Calendar, Users, Camera, MessageCircle, Sun, Moon, LogOut } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { useAuth } from '@/hooks/useAuth';
+import { useToast } from '@/components/ui/use-toast';
 
 export const Navigation = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [isDark, setIsDark] = useState(false);
+  const { signOut } = useAuth();
+  const { toast } = useToast();
+
+  const handleSignOut = async () => {
+    const { error } = await signOut();
+    if (error) {
+      toast({
+        title: "Error",
+        description: "Failed to sign out. Please try again.",
+        variant: "destructive",
+      });
+    } else {
+      toast({
+        title: "Signed out",
+        description: "You have been successfully signed out.",
+      });
+    }
+  };
 
   const toggleTheme = () => {
     setIsDark(!isDark);
@@ -58,7 +78,7 @@ export const Navigation = () => {
             </div>
           </div>
 
-          {/* Theme Toggle & Mobile Menu */}
+          {/* Theme Toggle, Sign Out & Mobile Menu */}
           <div className="flex items-center space-x-4">
             <Button
               variant="ghost"
@@ -67,6 +87,16 @@ export const Navigation = () => {
               className="rounded-full hover:bg-primary/10"
             >
               {isDark ? <Sun className="w-5 h-5" /> : <Moon className="w-5 h-5" />}
+            </Button>
+
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={handleSignOut}
+              className="rounded-full hover:bg-destructive/10 hover:text-destructive"
+              title="Sign out"
+            >
+              <LogOut className="w-5 h-5" />
             </Button>
 
             {/* Mobile menu button */}
@@ -104,6 +134,14 @@ export const Navigation = () => {
                 {item.name}
               </Link>
             ))}
+            <Button
+              variant="ghost"
+              onClick={handleSignOut}
+              className="flex items-center w-full px-3 py-2 rounded-md text-base font-medium text-destructive hover:text-destructive-foreground hover:bg-destructive/10 transition-colors justify-start"
+            >
+              <LogOut className="w-5 h-5 mr-3" />
+              Sign Out
+            </Button>
           </div>
         </motion.div>
       )}
