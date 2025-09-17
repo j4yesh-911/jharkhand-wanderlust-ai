@@ -10,6 +10,7 @@ import { useCommunityUploads } from '@/hooks/useCommunityUploads';
 import { useAuth } from '@/hooks/useAuth';
 import { Upload, Image, Video, FileText, Heart, MessageCircle, MapPin, Calendar } from 'lucide-react';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Link } from 'react-router-dom';
 
 export const CommunityUpload = () => {
   const { user } = useAuth();
@@ -315,6 +316,35 @@ export const CommunityUpload = () => {
                   </div>
                 </form>
               )}
+            </CardContent>
+          </Card>
+        </motion.div>
+      )}
+      
+      {!user && (
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="mb-8"
+        >
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <Upload className="w-5 h-5" />
+                Share Your Experience
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="flex flex-col sm:flex-row items-center justify-between gap-3">
+                <p className="text-sm text-muted-foreground">
+                  Sign in to upload photos and short videos to the community.
+                </p>
+                <Link to="/auth">
+                  <Button>
+                    Sign in to Upload
+                  </Button>
+                </Link>
+              </div>
             </CardContent>
           </Card>
         </motion.div>
