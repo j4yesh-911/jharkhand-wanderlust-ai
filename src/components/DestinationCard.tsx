@@ -1,9 +1,11 @@
+import { useState } from 'react';
 import { motion } from 'framer-motion';
-import { Star, MapPin, Clock, DollarSign, Users } from 'lucide-react';
+import { Star, MapPin, Clock, DollarSign, Users, Train } from 'lucide-react';
 import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Destination } from '@/data/destinations';
+import { TicketBookingForm } from '@/components/TicketBookingForm';
 import waterfallImage from '@/assets/waterfall-destination.jpg';
 import heritageImage from '@/assets/heritage-site.jpg';
 
@@ -13,6 +15,8 @@ interface DestinationCardProps {
 }
 
 export const DestinationCard = ({ destination, index }: DestinationCardProps) => {
+  const [isBookingOpen, setIsBookingOpen] = useState(false);
+
   const getImage = () => {
     return destination.category === 'heritage' || destination.category === 'culture' || destination.category === 'adventure' 
       ? heritageImage 
@@ -116,6 +120,20 @@ export const DestinationCard = ({ destination, index }: DestinationCardProps) =>
             <Button className="flex-1 btn-nature">
               View Details
             </Button>
+            <Button 
+              variant="outline" 
+              className="flex-1 hover:bg-water-primary/10 hover:border-water-primary hover:text-water-primary"
+              onClick={() => setIsBookingOpen(true)}
+            >
+              <motion.div
+                className="flex items-center space-x-2"
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+              >
+                <Train className="w-4 h-4" />
+                <span>Book Ticket</span>
+              </motion.div>
+            </Button>
             <Button variant="outline" size="icon" className="hover:bg-primary/10">
               <motion.div
                 whileHover={{ scale: 1.2 }}
@@ -125,6 +143,12 @@ export const DestinationCard = ({ destination, index }: DestinationCardProps) =>
               </motion.div>
             </Button>
           </div>
+
+          <TicketBookingForm
+            isOpen={isBookingOpen}
+            onClose={() => setIsBookingOpen(false)}
+            destinationName={destination.name}
+          />
         </div>
       </Card>
     </motion.div>
