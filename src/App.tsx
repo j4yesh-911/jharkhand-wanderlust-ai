@@ -15,6 +15,7 @@ import Assistant from "./pages/Assistant";
 import Auth from "./pages/Auth";
 import NotFound from "./pages/NotFound";
 
+
 const queryClient = new QueryClient();
 
 const App = () => (

@@ -1,55 +1,80 @@
-import { useState, useRef, useEffect } from 'react';
-import { motion } from 'framer-motion';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Badge } from '@/components/ui/badge';
-import { ScrollArea } from '@/components/ui/scroll-area';
-import { useToast } from '@/components/ui/use-toast';
-import { 
-  Send, 
-  Bot, 
-  User, 
-  Loader2, 
-  MapPin, 
+import { useState, useRef, useEffect } from "react";
+import { motion } from "framer-motion";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Badge } from "@/components/ui/badge";
+import { ScrollArea } from "@/components/ui/scroll-area";
+import { useToast } from "@/components/ui/use-toast";
+import {
+  Send,
+  Bot,
+  User,
+  Loader2,
+  MapPin,
   Calendar,
   Utensils,
   Camera,
-  Route
-} from 'lucide-react';
+  Route,
+} from "lucide-react";
 
 import { GoogleGenerativeAI } from "@google/generative-ai";
-
-const genAI = new GoogleGenerativeAI(import.meta.env.VITE_GEMINI_API_KEY);
-const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
 
 interface Message {
   id: string;
   content: string;
-  sender: 'user' | 'ai';
+  sender: "user" | "ai";
   timestamp: Date;
-  type?: 'text' | 'suggestion';
+  type?: "text" | "suggestion";
 }
 
+const genAI = new GoogleGenerativeAI(import.meta.env.VITE_GEMINI_API_KEY);
+const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
+
 const suggestions = [
-  { icon: <MapPin className="w-4 h-4" />, text: "Best places to visit in Ranchi", category: "destinations" },
-  { icon: <Calendar className="w-4 h-4" />, text: "Plan a 3-day itinerary", category: "itinerary" },
-  { icon: <Utensils className="w-4 h-4" />, text: "Traditional food recommendations", category: "food" },
-  { icon: <Route className="w-4 h-4" />, text: "How to reach Hundru Falls?", category: "transport" },
-  { icon: <Camera className="w-4 h-4" />, text: "Best photography spots", category: "activities" },
+  {
+    icon: <MapPin className="w-4 h-4" />,
+    text: "Best places to visit in Ranchi",
+    category: "destinations",
+  },
+  {
+    icon: <Calendar className="w-4 h-4" />,
+    text: "Plan a 3-day itinerary",
+    category: "itinerary",
+  },
+  {
+    icon: <Utensils className="w-4 h-4" />,
+    text: "Traditional food recommendations",
+    category: "food",
+  },
+  {
+    icon: <Route className="w-4 h-4" />,
+    text: "How to reach Hundru Falls?",
+    category: "transport",
+  },
+  {
+    icon: <Camera className="w-4 h-4" />,
+    text: "Best photography spots",
+    category: "activities",
+  },
 ];
 
 export const AIAssistant = () => {
   const { toast } = useToast();
+
+  const [chat, setChat] = useState(() => model.startChat({ history: [] }));
+
   const [messages, setMessages] = useState<Message[]>([
     {
-      id: '1',
-      content: "Hello! I'm your Jharkhand travel assistant. I can help you plan your trip, recommend places to visit, suggest local food, and answer any questions about traveling in Jharkhand. How can I help you today?",
-      sender: 'ai',
+      id: "1",
+      content:
+        "Hello! I'm your Jharkhand travel assistant. I can help you plan your trip, recommend places to visit, suggest local food, and answer any questions about traveling in Jharkhand. How can I help you today?",
+      sender: "ai",
       timestamp: new Date(),
-    }
+    },
   ]);
-  const [inputValue, setInputValue] = useState('');
+
+  const [inputValue, setInputValue] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
@@ -62,74 +87,61 @@ export const AIAssistant = () => {
   }, [messages]);
 
   const sendMessage = async (content: string) => {
-  if (!content.trim()) return;
+    if (!content.trim() || isLoading) return;
 
-  const userMessage: Message = {
-    id: Date.now().toString(),
-    content,
-    sender: 'user',
-    timestamp: new Date(),
-  };
-
-  setMessages(prev => [...prev, userMessage]);
-  setInputValue('');
-  setIsLoading(true);
-
-  try {
-    // ✅ Call Gemini instead of Supabase
-    const result = await model.generateContent(content);
-    const response = result.response.text();
-
-    const aiMessage: Message = {
-      id: (Date.now() + 1).toString(),
-      content: response,
-      sender: 'ai',
+    const userMessage: Message = {
+      id: Date.now().toString(),
+      content,
+      sender: "user",
       timestamp: new Date(),
     };
+    setMessages((prev) => [...prev, userMessage]);
+    setInputValue("");
+    setIsLoading(true);
 
-    setMessages(prev => [...prev, aiMessage]);
-  } catch (error) {
-    console.error('Gemini API error:', error);
+    try {
+      const result = await chat.sendMessage(content);
+      const fullResponse = result.response.text();
 
-    // fallback response
-    const fallbackMessage: Message = {
-      id: (Date.now() + 1).toString(),
-      content: getDefaultResponse(content),
-      sender: 'ai',
-      timestamp: new Date(),
-    };
+      const aiMessageId = (Date.now() + 1).toString();
+      const newAiMessage: Message = {
+        id: aiMessageId,
+        content: "",
+        sender: "ai",
+        timestamp: new Date(),
+      };
+      setMessages((prev) => [...prev, newAiMessage]);
 
-    setMessages(prev => [...prev, fallbackMessage]);
-  } finally {
-    setIsLoading(false);
-  }
-};
+      // Split response into lines and stream them
+      const lines = fullResponse.split("\n").filter((l) => l.trim() !== "");
+      let index = 0;
 
-
-  const getDefaultResponse = (userMessage: string): string => {
-    const lowercaseMessage = userMessage.toLowerCase();
-    
-    if (lowercaseMessage.includes('ranchi')) {
-      return "Ranchi is the capital of Jharkhand and offers great attractions like Tagore Hill, Rock Garden, and Kanke Dam. The city is also a gateway to many waterfalls and natural spots. Would you like specific recommendations for places to visit in Ranchi?";
+      const interval = setInterval(() => {
+        if (index < lines.length) {
+          setMessages((prev) =>
+            prev.map((msg) =>
+              msg.id === aiMessageId
+                ? { ...msg, content: msg.content + (msg.content ? "\n" : "") + lines[index] }
+                : msg
+            )
+          );
+          index++;
+        } else {
+          clearInterval(interval);
+          setIsLoading(false);
+        }
+      }, 400); // speed: one line every 0.4s
+    } catch (error) {
+      console.error("Gemini API error:", error);
+      const fallbackMessage: Message = {
+        id: (Date.now() + 1).toString(),
+        content: "I'm having trouble connecting to the AI. Please try again.",
+        sender: "ai",
+        timestamp: new Date(),
+      };
+      setMessages((prev) => [...prev, fallbackMessage]);
+      setIsLoading(false);
     }
-    
-    if (lowercaseMessage.includes('waterfall')) {
-      return "Jharkhand is famous for its beautiful waterfalls! Some must-visit ones include Hundru Falls (98m high), Jonha Falls, Dassam Falls, and Hirni Falls. Each offers unique beauty and trekking opportunities. Which waterfall interests you most?";
-    }
-    
-    if (lowercaseMessage.includes('food') || lowercaseMessage.includes('eat')) {
-      return "Jharkhand's cuisine is rich and diverse! Try traditional dishes like Litti Chokha, Dhuska, Rugra (mushroom curry), and Handia (rice beer). Local street food and tribal cuisine offer authentic flavors. Would you like restaurant recommendations?";
-    }
-    
-    if (lowercaseMessage.includes('itinerary') || lowercaseMessage.includes('plan')) {
-      return "I can help you plan a perfect Jharkhand itinerary! For a 3-day trip, I'd suggest: Day 1 - Explore Ranchi city, Day 2 - Visit waterfalls like Hundru and Jonha, Day 3 - Cultural sites and local markets. How many days are you planning to stay?";
-    }
-    
-    if (lowercaseMessage.includes('transport') || lowercaseMessage.includes('reach')) {
-      return "Jharkhand is well-connected by air, rail, and road. Ranchi airport connects to major cities. Train services are extensive. Local transport includes buses, taxis, and auto-rickshaws. Which specific destination do you need transport information for?";
-    }
-    
-    return "I'd be happy to help you explore Jharkhand! While my AI capabilities are currently being set up, I can still provide information about destinations, food, transportation, and help plan your itinerary. Feel free to ask specific questions about places to visit, local culture, or travel tips for Jharkhand.";
   };
 
   const handleSuggestionClick = (suggestion: string) => {
@@ -142,14 +154,14 @@ export const AIAssistant = () => {
   };
 
   const formatTime = (date: Date) => {
-    return date.toLocaleTimeString('en-US', {
-      hour: '2-digit',
-      minute: '2-digit'
+    return date.toLocaleTimeString("en-US", {
+      hour: "2-digit",
+      minute: "2-digit",
     });
   };
 
   return (
-    <Card className="h-[600px] flex flex-col">
+    <Card className="flex flex-col w-full h-auto max-h-[80vh] sm:max-h-[90vh]">
       <CardHeader className="bg-gradient-to-r from-primary to-accent text-white">
         <CardTitle className="flex items-center gap-2">
           <Bot className="w-5 h-5" />
@@ -159,40 +171,65 @@ export const AIAssistant = () => {
           </Badge>
         </CardTitle>
       </CardHeader>
-      
-      <CardContent className="flex-1 p-0 flex flex-col">
-        <ScrollArea className="flex-1 p-4">
+
+      <CardContent className="flex-1 p-0 flex flex-col overflow-hidden">
+        {/* Messages */}
+        <ScrollArea className="flex-1 p-4 overflow-y-auto">
           <div className="space-y-4">
             {messages.map((message) => (
               <motion.div
                 key={message.id}
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
-                className={`flex gap-3 ${message.sender === 'user' ? 'justify-end' : 'justify-start'}`}
+                className={`flex gap-3 ${
+                  message.sender === "user"
+                    ? "justify-end"
+                    : "justify-start"
+                }`}
               >
-                <div className={`flex gap-3 max-w-[80%] ${message.sender === 'user' ? 'flex-row-reverse' : 'flex-row'}`}>
-                  <div className={`w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 ${
-                    message.sender === 'user' ? 'bg-primary text-white' : 'bg-muted'
-                  }`}>
-                    {message.sender === 'user' ? <User className="w-4 h-4" /> : <Bot className="w-4 h-4" />}
+                <div
+                  className={`flex gap-3 w-full max-w-[80%] ${
+                    message.sender === "user"
+                      ? "flex-row-reverse"
+                      : "flex-row"
+                  }`}
+                >
+                  <div
+                    className={`w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 ${
+                      message.sender === "user"
+                        ? "bg-primary text-white"
+                        : "bg-muted"
+                    }`}
+                  >
+                    {message.sender === "user" ? (
+                      <User className="w-4 h-4" />
+                    ) : (
+                      <Bot className="w-4 h-4" />
+                    )}
                   </div>
-                  
-                  <div className={`rounded-lg p-3 ${
-                    message.sender === 'user' 
-                      ? 'bg-primary text-white' 
-                      : 'bg-muted'
-                  }`}>
-                    <p className="text-sm whitespace-pre-wrap">{message.content}</p>
-                    <p className={`text-xs mt-1 opacity-70 ${
-                      message.sender === 'user' ? 'text-white/70' : 'text-muted-foreground'
-                    }`}>
+
+                  <div
+                    className={`rounded-lg p-3 max-w-full break-words whitespace-pre-wrap ${
+                      message.sender === "user"
+                        ? "bg-primary text-white"
+                        : "bg-muted"
+                    }`}
+                  >
+                    <p className="text-sm">{message.content}</p>
+                    <p
+                      className={`text-xs mt-1 opacity-70 ${
+                        message.sender === "user"
+                          ? "text-white/70"
+                          : "text-muted-foreground"
+                      }`}
+                    >
                       {formatTime(message.timestamp)}
                     </p>
                   </div>
                 </div>
               </motion.div>
             ))}
-            
+
             {isLoading && (
               <motion.div
                 initial={{ opacity: 0 }}
@@ -210,11 +247,12 @@ export const AIAssistant = () => {
                 </div>
               </motion.div>
             )}
-            
+
             <div ref={messagesEndRef} />
           </div>
         </ScrollArea>
 
+        {/* Suggestions */}
         {messages.length === 1 && (
           <div className="p-4 border-t bg-muted/20">
             <p className="text-sm font-medium mb-2">Quick suggestions:</p>
@@ -235,6 +273,7 @@ export const AIAssistant = () => {
           </div>
         )}
 
+        {/* Input */}
         <div className="p-4 border-t">
           <form onSubmit={handleSubmit} className="flex gap-2">
             <Input
@@ -244,8 +283,8 @@ export const AIAssistant = () => {
               disabled={isLoading}
               className="flex-1"
             />
-            <Button 
-              type="submit" 
+            <Button
+              type="submit"
               disabled={isLoading || !inputValue.trim()}
               size="icon"
             >
