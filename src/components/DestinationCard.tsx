@@ -6,8 +6,12 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Destination } from '@/data/destinations';
 import { TicketBookingForm } from '@/components/TicketBookingForm';
-import waterfallImage from '@/assets/waterfall-destination.jpg';
-import heritageImage from '@/assets/heritage-site.jpg';
+import waterfallImage from '@/assets/jharkhand-waterfall.jpg';
+import heritageImage from '@/assets/jharkhand-heritage.jpg';
+import forestImage from '@/assets/jharkhand-forest.jpg';
+import cultureImage from '@/assets/jharkhand-culture.jpg';
+import adventureImage from '@/assets/jharkhand-adventure.jpg';
+import ecoImage from '@/assets/jharkhand-ecopark.jpg';
 
 interface DestinationCardProps {
   destination: Destination;
@@ -18,17 +22,26 @@ export const DestinationCard = ({ destination, index }: DestinationCardProps) =>
   const [isBookingOpen, setIsBookingOpen] = useState(false);
 
   const getImage = () => {
-    return destination.category === 'heritage' || destination.category === 'culture' || destination.category === 'adventure' 
-      ? heritageImage 
-      : waterfallImage;
+    switch (destination.category) {
+      case 'waterfall': return waterfallImage;
+      case 'heritage': return heritageImage;
+      case 'culture': return cultureImage;
+      case 'adventure': return adventureImage;
+      case 'nature': return forestImage;
+      default: 
+        // Handle additional categories not in the type definition
+        if (destination.category === 'eco_park') return ecoImage;
+        if (destination.category === 'museum') return heritageImage;
+        return forestImage;
+    }
   };
 
   const getDifficultyColor = (difficulty: string) => {
     switch (difficulty) {
-      case 'Easy': return 'bg-green-500';
-      case 'Moderate': return 'bg-yellow-500';
-      case 'Challenging': return 'bg-red-500';
-      default: return 'bg-gray-500';
+      case 'Easy': return 'bg-forest-secondary text-white';
+      case 'Moderate': return 'bg-sunset-primary text-white';
+      case 'Challenging': return 'bg-earth-accent text-white';
+      default: return 'bg-muted text-muted-foreground';
     }
   };
 

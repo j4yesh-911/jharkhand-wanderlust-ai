@@ -80,50 +80,50 @@ export const DestinationExplorer = () => {
       </motion.div>
 
       {/* Search and Filters */}
-      {/* <motion.div
+      <motion.div
         initial={{ opacity: 0, y: 20 }}
         whileInView={{ opacity: 1, y: 0 }}
         viewport={{ once: true }}
         className="mb-12"
       >
-        <div className="glass-card p-6 rounded-2xl">
-          <div className="flex flex-col lg:flex-row gap-6 items-center"> */}
+        <div className="glass-card p-6 rounded-2xl backdrop-blur-lg">
+          <div className="flex flex-col lg:flex-row gap-6 items-center">
             {/* Search */}
-            {/* <div className="relative flex-1 w-full">
+            <div className="relative flex-1 w-full">
               <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground w-5 h-5" />
               <Input
                 placeholder="Search destinations, locations, activities..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="pl-10 h-12 bg-background/50 border-border/50 focus:border-primary/50"
+                className="pl-10 h-12 bg-background/50 border-border/50 focus:border-primary/50 transition-all duration-300"
               />
-            </div> */}
+            </div>
 
-            {/* View Toggle
-      //       <div className="flex items-center space-x-2">
-      //         <Button
-      //           variant={viewMode === 'grid' ? 'default' : 'outline'}
-      //           size="icon"
-      //           onClick={() => setViewMode('grid')}
-      //           className="h-12 w-12"
-      //         >
-      //           <Grid className="w-5 h-5" />
-      //         </Button>
-      //         <Button
-      //           variant={viewMode === 'list' ? 'default' : 'outline'}
-      //           size="icon"
-      //           onClick={() => setViewMode('list')}
-      //           className="h-12 w-12"
-      //         >
-      //           <List className="w-5 h-5" />
-      //         </Button>
-      //       </div>
-      //     </div>
-      //   </div>
-      // </motion.div> */}
+            {/* View Toggle */}
+            <div className="flex items-center space-x-2">
+              <Button
+                variant={viewMode === 'grid' ? 'default' : 'outline'}
+                size="icon"
+                onClick={() => setViewMode('grid')}
+                className="h-12 w-12 transition-all duration-300"
+              >
+                <Grid className="w-5 h-5" />
+              </Button>
+              <Button
+                variant={viewMode === 'list' ? 'default' : 'outline'}
+                size="icon"
+                onClick={() => setViewMode('list')}
+                className="h-12 w-12 transition-all duration-300"
+              >
+                <List className="w-5 h-5" />
+              </Button>
+            </div>
+          </div>
+        </div>
+      </motion.div>
 
       {/* Category Filters */}
-      {/* <motion.div
+      <motion.div
         initial={{ opacity: 0, y: 20 }}
         whileInView={{ opacity: 1, y: 0 }}
         viewport={{ once: true }}
@@ -138,10 +138,10 @@ export const DestinationExplorer = () => {
             >
               <Badge
                 variant={selectedCategory === category.id ? 'default' : 'secondary'}
-                className={`cursor-pointer px-4 py-2 text-sm font-medium transition-all ${
+                className={`cursor-pointer px-4 py-2 text-sm font-medium transition-all duration-300 ${
                   selectedCategory === category.id
-                    ? 'bg-gradient-nature text-white shadow-glow'
-                    : 'glass hover:bg-primary/10'
+                    ? 'bg-gradient-nature text-white shadow-glow border-transparent'
+                    : 'glass hover:bg-primary/10 hover:border-primary/20 hover:shadow-soft'
                 }`}
                 onClick={() => setSelectedCategory(category.id)}
               >
@@ -151,22 +151,22 @@ export const DestinationExplorer = () => {
             </motion.div>
           ))}
         </div>
-      </motion.div> */}
+      </motion.div>
 
       {/* Results Count */}
-      {/* <motion.div
+      <motion.div
         initial={{ opacity: 0 }}
         whileInView={{ opacity: 1 }}
         viewport={{ once: true }}
-        className="mb-8"
+        className="mb-8 text-center"
       >
-        <p className="text-muted-foreground">
-          Found <span className="font-semibold text-primary">{filteredDestinations.length}</span> destinations
+        <p className="text-muted-foreground text-lg">
+          Found <span className="font-semibold text-gradient-nature text-xl">{filteredDestinations.length}</span> amazing destinations
           {selectedCategory !== 'all' && (
-            <span> in <span className="font-semibold">{categories.find(c => c.id === selectedCategory)?.name}</span></span>
+            <span> in <span className="font-semibold text-primary">{categories.find(c => c.id === selectedCategory)?.name}</span></span>
           )}
         </p>
-      </motion.div> */}
+      </motion.div>
 
       {/* Error State */}
       {error && (
@@ -214,27 +214,30 @@ export const DestinationExplorer = () => {
       )}
 
       {/* No Results */}
-      {/* {filteredDestinations.length === 0 && (
+      {!loading && filteredDestinations.length === 0 && (
         <motion.div
           initial={{ opacity: 0, scale: 0.8 }}
           animate={{ opacity: 1, scale: 1 }}
           className="text-center py-16"
         >
-          <div className="glass-card p-12 rounded-2xl inline-block">
+          <div className="glass-card p-12 rounded-2xl inline-block backdrop-blur-lg">
             <div className="text-6xl mb-4">🔍</div>
-            <h3 className="text-2xl font-bold mb-2">No destinations found</h3>
-            <p className="text-muted-foreground mb-6">
-              Try adjusting your search or filters to discover more places
+            <h3 className="text-2xl font-playfair font-bold mb-2 text-gradient-nature">No destinations found</h3>
+            <p className="text-muted-foreground mb-6 max-w-md">
+              Try adjusting your search or filters to discover more amazing places in Jharkhand
             </p>
-            <Button onClick={() => {
-              setSearchQuery('');
-              setSelectedCategory('all');
-            }}>
+            <Button 
+              onClick={() => {
+                setSearchQuery('');
+                setSelectedCategory('all');
+              }}
+              className="btn-nature"
+            >
               Clear Filters
             </Button>
           </div>
         </motion.div>
-      )} */}
+      )}
     </section>
   );
 };
