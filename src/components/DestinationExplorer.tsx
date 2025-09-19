@@ -80,16 +80,16 @@ export const DestinationExplorer = () => {
       </motion.div>
 
       {/* Search and Filters */}
-      <motion.div
+      {/* <motion.div
         initial={{ opacity: 0, y: 20 }}
         whileInView={{ opacity: 1, y: 0 }}
         viewport={{ once: true }}
         className="mb-12"
       >
         <div className="glass-card p-6 rounded-2xl">
-          <div className="flex flex-col lg:flex-row gap-6 items-center">
+          <div className="flex flex-col lg:flex-row gap-6 items-center"> */}
             {/* Search */}
-            <div className="relative flex-1 w-full">
+            {/* <div className="relative flex-1 w-full">
               <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground w-5 h-5" />
               <Input
                 placeholder="Search destinations, locations, activities..."
@@ -97,33 +97,33 @@ export const DestinationExplorer = () => {
                 onChange={(e) => setSearchQuery(e.target.value)}
                 className="pl-10 h-12 bg-background/50 border-border/50 focus:border-primary/50"
               />
-            </div>
+            </div> */}
 
-            {/* View Toggle */}
-            <div className="flex items-center space-x-2">
-              <Button
-                variant={viewMode === 'grid' ? 'default' : 'outline'}
-                size="icon"
-                onClick={() => setViewMode('grid')}
-                className="h-12 w-12"
-              >
-                <Grid className="w-5 h-5" />
-              </Button>
-              <Button
-                variant={viewMode === 'list' ? 'default' : 'outline'}
-                size="icon"
-                onClick={() => setViewMode('list')}
-                className="h-12 w-12"
-              >
-                <List className="w-5 h-5" />
-              </Button>
-            </div>
-          </div>
-        </div>
-      </motion.div>
+            {/* View Toggle
+      //       <div className="flex items-center space-x-2">
+      //         <Button
+      //           variant={viewMode === 'grid' ? 'default' : 'outline'}
+      //           size="icon"
+      //           onClick={() => setViewMode('grid')}
+      //           className="h-12 w-12"
+      //         >
+      //           <Grid className="w-5 h-5" />
+      //         </Button>
+      //         <Button
+      //           variant={viewMode === 'list' ? 'default' : 'outline'}
+      //           size="icon"
+      //           onClick={() => setViewMode('list')}
+      //           className="h-12 w-12"
+      //         >
+      //           <List className="w-5 h-5" />
+      //         </Button>
+      //       </div>
+      //     </div>
+      //   </div>
+      // </motion.div> */}
 
       {/* Category Filters */}
-      <motion.div
+      {/* <motion.div
         initial={{ opacity: 0, y: 20 }}
         whileInView={{ opacity: 1, y: 0 }}
         viewport={{ once: true }}
@@ -151,10 +151,10 @@ export const DestinationExplorer = () => {
             </motion.div>
           ))}
         </div>
-      </motion.div>
+      </motion.div> */}
 
       {/* Results Count */}
-      <motion.div
+      {/* <motion.div
         initial={{ opacity: 0 }}
         whileInView={{ opacity: 1 }}
         viewport={{ once: true }}
@@ -166,7 +166,7 @@ export const DestinationExplorer = () => {
             <span> in <span className="font-semibold">{categories.find(c => c.id === selectedCategory)?.name}</span></span>
           )}
         </p>
-      </motion.div>
+      </motion.div> */}
 
       {/* Error State */}
       {error && (
@@ -214,7 +214,7 @@ export const DestinationExplorer = () => {
       )}
 
       {/* No Results */}
-      {filteredDestinations.length === 0 && (
+      {/* {filteredDestinations.length === 0 && (
         <motion.div
           initial={{ opacity: 0, scale: 0.8 }}
           animate={{ opacity: 1, scale: 1 }}
@@ -234,7 +234,7 @@ export const DestinationExplorer = () => {
             </Button>
           </div>
         </motion.div>
-      )}
+      )} */}
     </section>
   );
 };

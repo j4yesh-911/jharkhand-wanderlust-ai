@@ -7,7 +7,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { MapPin, Calendar, Users, Camera, MessageCircle, Utensils } from 'lucide-react';
 import { motion } from 'framer-motion';
-
+import HomePage from './HomePage';
 const Home = () => {
   return (
     <div className="min-h-screen">
@@ -109,7 +109,13 @@ const Home = () => {
           </div>
         </section>
       </main>
+
+      <HomePage/>
     </div>
+
+
+
+
   );
 };
 

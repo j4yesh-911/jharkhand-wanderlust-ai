@@ -1,9 +1,11 @@
+// src/pages/Explore.jsx
 import { Navigation } from '@/components/Navigation';
 import { DestinationExplorer } from '@/components/DestinationExplorer';
+import { DistrictList } from '@/components/DistrictList';
 
 const Explore = () => {
   return (
-    <div className="min-h-screen">
+    <div className="min-h-screen bg-surface">
       <Navigation />
       <div className="pt-16">
         <div className="bg-gradient-nature py-20 text-white text-center">
@@ -16,7 +18,12 @@ const Explore = () => {
             </p>
           </div>
         </div>
+
+        {/* existing explorer (keeps whatever features you already had) */}
         <DestinationExplorer />
+
+        {/* New district-wise categorized section */}
+        <DistrictList />
       </div>
     </div>
   );
